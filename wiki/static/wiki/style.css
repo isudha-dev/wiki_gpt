@@ -1,0 +1,65 @@
+/* styles.css */
+
+/* Define your formatting rules here */
+body {
+    font-family: "Roboto", sans-serif; /* Default font family */
+    /*background-color: #f0f0f0;*/
+}
+
+/* Font family for headings */
+h1, h2, h3 {
+    font-family: "Roboto", serif;
+}
+
+/* Add more styling rules as needed */
+.search-container {
+    margin: 20px auto;
+    text-align: center;
+}
+
+.search-input {
+    padding: 8px;
+    width: 200px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.search-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #0056b3;
+}
+
+.collapsible {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: 1px;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .collapsible:hover {
+    background-color: #ccc;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: #f1f1f1;
+}

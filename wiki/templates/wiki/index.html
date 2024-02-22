@@ -1,0 +1,84 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'wiki/style.css' %}">
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Search Page</title>
+    </head>
+
+    <body>
+
+    <form action="/wiki/page/" method="get">
+        <div class="search-container">
+            <input type="text" name="page_title" id="page_title" class="search-input" value="{{ data.page_title }}"
+                   placeholder="Enter wiki page title here.">
+            <button class="search-button">Search</button>
+            <br>
+            {% if not success %}<p><strong>{{ error }}</strong></p>{% endif %}
+        </div>
+    </form>
+
+    {% if success %}
+    <center>
+        <p>Page URL: <a href="{{ data.full_url }}" target="_blank">{{ data.full_url }}</a></p>
+    </center>
+
+    <ul>
+        {% if data.sections %}
+        {% for section in data.sections %}
+        <div>
+            <button type="button" class="collapsible"><B>{{ section.title }}</B></button>
+            <div class="content" style="display:{% if section.title == data.section_title %}block{% else %}none{% endif %}">
+                <p>{{ section.text }}</p>
+                {% if section.summary %}
+                <h3>Section summary</h3>
+                <p>{{ section.summary }}</p>
+                {% if section.paraphrase %}
+                <h3>Summary paraphrase</h3>
+                <p>{{ section.paraphrase }}</p>
+                {% endif %}
+                <form action="/wiki/page/section/paraphrase/" method="get">
+                    <label>
+                        <input name="page_title" value="{{data.page_title}}" hidden="hidden">
+                        <input name="section_title" value="{{section.title}}" hidden="hidden">
+                    </label>
+                    <input type="submit" value="Paraphrase">
+                </form>
+                {% else %}
+                <form action="/wiki/page/section/summarise/" method="get">
+                    <label>
+                        <input name="page_title" value="{{data.page_title}}" hidden="hidden">
+                        <input name="section_title" value="{{section.title}}" hidden="hidden">
+                    </label>
+                    <input type="submit" value="Summarise">
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </ul>
+
+    {% endif %}
+
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        }
+    </script>
+
+    </body>
+</html>
