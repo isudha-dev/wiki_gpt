@@ -103,7 +103,7 @@ def index(request):
 def get_wiki_sections(request):
     page_title = request.GET.get("page_title")
     if not page_title:
-        response = {SUCCESS: False, ERROR: f"Please enter wiki page title"}
+        response = {SUCCESS: False, ERROR: ""}
         return render(request, "wiki/index.html", response)
 
     wiki_page = get_wiki_page(page_title)
