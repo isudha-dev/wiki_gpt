@@ -6,6 +6,7 @@ from openai import OpenAI
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.shortcuts import render
 
 from wiki.constants import SUCCESS, ERROR, DATA, PAGE_SECTION_CACHE_KEY
 
@@ -66,6 +67,9 @@ def get_text_completions(prompt, text):
 
     return summary_response.choices[0].message.content
 
+
+def index(request):
+    return render(request, "wiki/index.html")
 
 @api_view(["GET"])
 def get_wiki_sections(request):
