@@ -19,6 +19,11 @@ summary_prompt = ("You are a highly skilled AI trained in language comprehension
                   "the most important points, providing a coherent and readable summary that could help a person "
                   "understand the main points of the discussion without needing to read the entire text. Please avoid "
                   "unnecessary details or tangential points.")
+paraphrase_prompt = ("You are a highly skilled AI trained in language comprehension and paraphrasing. I would like you "
+                     "to read the following text and paraphrase it so that anyone can easily understand it. Aim to "
+                     "retain the most important points, providing a coherent and readable summary that could help a "
+                     "person understand the main points of the discussion without needing to read the entire text. "
+                     "Please avoid unnecessary details or tangential points and respond in a funny manner.")
 
 
 def get_wiki_page(page_title):
@@ -117,6 +122,42 @@ def summarise(request):
             "section_title": section_title,
             "section_text": section_text,
             "summary": wiki_page_section_summary
+        }
+    }
+
+    return Response(response, status=status.HTTP_200_OK, content_type="application/json")
+
+@api_view(["GET"])
+def paraphrase(request):
+    page_title = request.GET.get("page_title")
+    wiki_page = get_wiki_page(page_title)
+    if not wiki_page:
+        response = {SUCCESS: False, ERROR: "This page does not exists."}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST, content_type="application/json")
+
+    section_title = request.GET.get("section_title")
+    if not wiki_page.section_by_title(section_title):
+        response = {SUCCESS: False, ERROR: "This page section does not exists."}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST, content_type="application/json")
+
+    section_text = wiki_page.section_by_title(section_title).text
+    wiki_page_section_summary = get_wiki_page_section_summary(wiki_page, section_title, section_text)
+
+    paraphrased_summary = get_text_completions(paraphrase_prompt, wiki_page_section_summary)
+
+    if not paraphrased_summary:
+        response = {ERROR: False, ERROR: "Summary could not be paraphrased."}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST, content_type="application/json")
+
+    response = {
+        SUCCESS: True,
+        DATA: {
+            "page_title": wiki_page.title,
+            "full_url": wiki_page.fullurl,
+            "section_title": section_title,
+            "section_text": section_text,
+            "summary": wiki_page_section_summary,
+            "paraphrase": paraphrased_summary
         }
     }
 
