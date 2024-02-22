@@ -7,9 +7,9 @@ body {
 }
 
 /* Font family for headings */
-h1, h2, h3 {
-    font-family: "Roboto", serif;
-}
+/*h1, h2, h3 {*/
+/*    font-family: "Roboto", sans-serif;*/
+/*}*/
 
 /* Add more styling rules as needed */
 .search-container {
@@ -40,14 +40,15 @@ h1, h2, h3 {
 }
 
 .collapsible {
-    background-color: #eee;
+    background-color: #ccc;
     color: #444;
     cursor: pointer;
     padding: 18px;
     width: 100%;
-    border: 1px;
+    border: 2px;
+    border-radius: 10px;
     text-align: left;
-    outline: none;
+    outline: 1px;
     font-size: 15px;
 }
 
@@ -62,4 +63,6 @@ h1, h2, h3 {
     display: none;
     overflow: hidden;
     background-color: #f1f1f1;
+    border: 2px;
+    border-radius: 10px;
 }

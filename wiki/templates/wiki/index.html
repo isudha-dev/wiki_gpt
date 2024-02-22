@@ -30,7 +30,7 @@
         {% for section in data.sections %}
         <div>
             <button type="button" class="collapsible"><B>{{ section.title }}</B></button>
-            <div class="content" style="display:{% if section.title == data.section_title %}block{% else %}none{% endif %}">
+            <div class="content" style="display:{% if section.title == data.section_title %} block {% else %} none {% endif %}">
                 <p>{{ section.text }}</p>
                 {% if section.summary %}
                 <B>Section summary</B>
