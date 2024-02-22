@@ -3,13 +3,10 @@ import os
 import wikipediaapi
 from openai import OpenAI
 
-from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from django.shortcuts import render
 
 from wiki.constants import SUCCESS, ERROR, DATA, PAGE_SECTION_CACHE_KEY
-
 
 page_cache = {}
 page_section_summary_cache = {}
@@ -68,101 +65,84 @@ def get_text_completions(prompt, text):
     return summary_response.choices[0].message.content
 
 
+def get_summary_paraphase(page_title, section_title, operation):
+    wiki_page = get_wiki_page(page_title)
+    section_text = wiki_page.section_by_title(section_title).text
+    section_summary = get_wiki_page_section_summary(wiki_page, section_title, section_text)
+
+    sections = []
+    for section in wiki_page.sections:
+        if section.title == section_title:
+            if operation == "summarise":
+                sections.append({"title": section.title, "text": section.text, "summary": section_summary})
+            else:
+                paraphrased_summary = get_text_completions(paraphrase_prompt, section_summary)
+                sections.append({"title": section.title, "text": section.text, "summary": section_summary,
+                                 "paraphrase": paraphrased_summary})
+        else:
+            sections.append({"title": section.title, "text": section.text})
+
+    response = {
+        SUCCESS: True,
+        DATA: {
+            "page_title": wiki_page.title,
+            "full_url": wiki_page.fullurl,
+            "sections": sections,
+            "section_title": section_title,
+        }
+    }
+
+    return response
+
+
 def index(request):
     return render(request, "wiki/index.html")
+
 
 @api_view(["GET"])
 def get_wiki_sections(request):
     page_title = request.GET.get("page_title")
     if not page_title:
-        response = {SUCCESS: False, ERROR: "Invalid page title."}
-        return Response(response, status=status.HTTP_400_BAD_REQUEST, content_type="application/json")
+        response = {SUCCESS: False, ERROR: f"Please enter wiki page title"}
+        return render(request, "wiki/index.html", response)
 
     wiki_page = get_wiki_page(page_title)
     if not wiki_page:
-        response = {SUCCESS: False, ERROR: "This page does not exists."}
-        return Response(response, status=status.HTTP_400_BAD_REQUEST, content_type="application/json")
+        response = {
+            DATA: {"page_title": page_title},
+            SUCCESS: False,
+            ERROR: f"Could not find any wiki page with title '{page_title}'"
+        }
+        return render(request, "wiki/index.html", response)
 
-    section_titles = []
+    sections = []
     for section in wiki_page.sections:
-        section_titles.append(section.title)
+        sections.append({"title": section.title, "text": section.text})
 
     response = {
         SUCCESS: True,
         DATA: {
             "page_title": wiki_page.title,
             "full_url": wiki_page.fullurl,
-            "sections": section_titles
+            "sections": sections,
         }
     }
-    return Response(response, status=status.HTTP_200_OK, content_type="application/json")
+    return render(request, "wiki/index.html", response)
 
 
 @api_view(["GET"])
 def summarise(request):
     page_title = request.GET.get("page_title")
-    wiki_page = get_wiki_page(page_title)
-    if not wiki_page:
-        response = {SUCCESS: False, ERROR: "This page does not exists."}
-        return Response(response, status=status.HTTP_400_BAD_REQUEST, content_type="application/json")
-
     section_title = request.GET.get("section_title")
-    if not wiki_page.section_by_title(section_title):
-        response = {SUCCESS: False, ERROR: "This page section does not exists."}
-        return Response(response, status=status.HTTP_400_BAD_REQUEST, content_type="application/json")
 
-    section_text = wiki_page.section_by_title(section_title).text
-    wiki_page_section_summary = get_wiki_page_section_summary(wiki_page, section_title, section_text)
+    summary = get_summary_paraphase(page_title, section_title, "summarise")
+    return render(request, "wiki/index.html", summary)
 
-    if not wiki_page_section_summary:
-        response = {ERROR: False, DATA: "Section could not be summarised."}
-        return Response(response, status=status.HTTP_400_BAD_REQUEST, content_type="application/json")
-
-    response = {
-        SUCCESS: True,
-        DATA: {
-            "page_title": wiki_page.title,
-            "full_url": wiki_page.fullurl,
-            "section_title": section_title,
-            "section_text": section_text,
-            "summary": wiki_page_section_summary
-        }
-    }
-
-    return Response(response, status=status.HTTP_200_OK, content_type="application/json")
 
 @api_view(["GET"])
 def paraphrase(request):
     page_title = request.GET.get("page_title")
-    wiki_page = get_wiki_page(page_title)
-    if not wiki_page:
-        response = {SUCCESS: False, ERROR: "This page does not exists."}
-        return Response(response, status=status.HTTP_400_BAD_REQUEST, content_type="application/json")
-
     section_title = request.GET.get("section_title")
-    if not wiki_page.section_by_title(section_title):
-        response = {SUCCESS: False, ERROR: "This page section does not exists."}
-        return Response(response, status=status.HTTP_400_BAD_REQUEST, content_type="application/json")
 
-    section_text = wiki_page.section_by_title(section_title).text
-    wiki_page_section_summary = get_wiki_page_section_summary(wiki_page, section_title, section_text)
-
-    paraphrased_summary = get_text_completions(paraphrase_prompt, wiki_page_section_summary)
-
-    if not paraphrased_summary:
-        response = {ERROR: False, ERROR: "Summary could not be paraphrased."}
-        return Response(response, status=status.HTTP_400_BAD_REQUEST, content_type="application/json")
-
-    response = {
-        SUCCESS: True,
-        DATA: {
-            "page_title": wiki_page.title,
-            "full_url": wiki_page.fullurl,
-            "section_title": section_title,
-            "section_text": section_text,
-            "summary": wiki_page_section_summary,
-            "paraphrase": paraphrased_summary
-        }
-    }
-
-    return Response(response, status=status.HTTP_200_OK, content_type="application/json")
+    summary_paraphrase = get_summary_paraphase(page_title, section_title, "paraphrase")
+    return render(request, "wiki/index.html", summary_paraphrase)

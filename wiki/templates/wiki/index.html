@@ -16,7 +16,7 @@
                    placeholder="Enter wiki page title here.">
             <button class="search-button">Search</button>
             <br>
-            {% if not success %}<p><strong>{{ error }}</strong></p>{% endif %}
+            {% if not success %}<p style="color: red;"><strong>{{ error }}</strong></p>{% endif %}
         </div>
     </form>
 
@@ -33,10 +33,10 @@
             <div class="content" style="display:{% if section.title == data.section_title %}block{% else %}none{% endif %}">
                 <p>{{ section.text }}</p>
                 {% if section.summary %}
-                <h3>Section summary</h3>
+                <B>Section summary</B>
                 <p>{{ section.summary }}</p>
                 {% if section.paraphrase %}
-                <h3>Summary paraphrase</h3>
+                <B>Summary paraphrase</B>
                 <p>{{ section.paraphrase }}</p>
                 {% endif %}
                 <form action="/wiki/page/section/paraphrase/" method="get">
