@@ -4,13 +4,13 @@ import wikipediaapi
 from openai import OpenAI
 from rest_framework.decorators import api_view
 from django.shortcuts import render
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from wiki.constants import SUCCESS, ERROR, DATA, PAGE_SECTION_CACHE_KEY
 
 page_cache = {}
 page_section_summary_cache = {}
 
-client = OpenAI(api_key=os.getenv("openai_key"))
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 summary_prompt = ("You are a highly skilled AI trained in language comprehension and summarising. I would like you to "
                   "read the following text and summarise it so that anyone can easily understand it. Aim to retain "
                   "the most important points, providing a coherent and readable summary that could help a person "
@@ -101,13 +101,13 @@ def index(request):
 @extend_schema(
     description="Wikipedia API to get wiki page for searched title and load page sections",
     parameters=[
-        OpenApiParameter(name='page_title', description='Page title to search', type=str, default="Python (programming language)"),
+        OpenApiParameter(name='page_title', description='Page title to search', type=str,
+                         default="Python (programming language)"),
     ],
 )
 @api_view(["GET"])
 def get_wiki_sections(request):
     page_title = request.GET.get("page_title")
-    queryset = {"page_title": page_title}
 
     if not page_title:
         response = {SUCCESS: False, ERROR: ""}
@@ -140,7 +140,8 @@ def get_wiki_sections(request):
 @extend_schema(
     description="Summarises selected section",
     parameters=[
-        OpenApiParameter(name='page_title', description='Searched page title', type=str, default="Python (programming language)"),
+        OpenApiParameter(name='page_title', description='Searched page title', type=str,
+                         default="Python (programming language)"),
         OpenApiParameter(name='section_title', description='Section to summarise', type=str, default="History"),
     ],
 )
@@ -156,7 +157,8 @@ def summarise(request):
 @extend_schema(
     description="Paraphrases selected summary",
     parameters=[
-        OpenApiParameter(name='page_title', description='Searched page title', type=str, default="Python (programming language)"),
+        OpenApiParameter(name='page_title', description='Searched page title', type=str,
+                         default="Python (programming language)"),
         OpenApiParameter(name='section_title', description='Section to summarise', type=str, default="History"),
     ],
 )
