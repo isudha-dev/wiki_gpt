@@ -16,3 +16,4 @@ services:
     environment:
       - CURR_ENV=prod
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
