@@ -25,10 +25,10 @@
         <p>Page URL: <a href="{{ data.full_url }}" target="_blank">{{ data.full_url }}</a></p>
     </center>
 
-    <ul>
+    <ul class="ul-section">
         {% if data.sections %}
         {% for section in data.sections %}
-        <div>
+        <div class="ul-section-div">
             <button type="button" class="collapsible"><B>{{ section.title }}</B></button>
             <div class="content" style="display:{% if section.title == data.section_title %} block {% else %} none {% endif %}">
                 <p>{{ section.text }}</p>
@@ -44,7 +44,7 @@
                         <input name="page_title" value="{{data.page_title}}" hidden="hidden">
                         <input name="section_title" value="{{section.title}}" hidden="hidden">
                     </label>
-                    <input type="submit" value="Paraphrase">
+                    <input class="submit-button" type="submit" value="Paraphrase">
                 </form>
                 {% else %}
                 <form action="/wiki/page/section/summarise/" method="get">
@@ -52,7 +52,7 @@
                         <input name="page_title" value="{{data.page_title}}" hidden="hidden">
                         <input name="section_title" value="{{section.title}}" hidden="hidden">
                     </label>
-                    <input type="submit" value="Summarise">
+                    <input class="submit-button" type="submit" value="Summarise">
                 </form>
                 {% endif %}
             </div>

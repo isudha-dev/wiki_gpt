@@ -35,6 +35,16 @@ body {
     cursor: pointer;
 }
 
+.submit-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #008000;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
 .search-button:hover {
     background-color: #0056b3;
 }
@@ -43,7 +53,7 @@ body {
     background-color: #ccc;
     color: #444;
     cursor: pointer;
-    padding: 18px;
+    padding: 20px;
     width: 100%;
     border: 2px;
     border-radius: 10px;
@@ -65,4 +75,12 @@ body {
     background-color: #f1f1f1;
     border: 2px;
     border-radius: 10px;
+}
+
+.ul-section {
+    padding-inline: 5%;
+}
+
+.ul-section-div {
+    padding-bottom: 3px;
 }
