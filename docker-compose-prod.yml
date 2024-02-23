@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  wikigpt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    expose:
+      - 80
+    volumes:
+      - .:/usr/local/isudha/wikigpt
+    stdin_open: true
+    tty: true
+    command: python3 manage.py runserver 0.0.0.0:80
+    environment:
+      - CURR_ENV=prod
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
