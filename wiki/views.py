@@ -110,7 +110,7 @@ def get_sections(wiki_page):
         if not section.text:
             section_text = ""
             for subsection in section.sections:
-                section_text = "{0}\n\n<b>{1}</b>\n\n{2}".format(section_text, subsection.title, subsection.text)
+                section_text = "{0}\n\n{1}\n\n{2}".format(section_text, subsection.title, subsection.text)
 
             section_dict["text"] = section_text
 
