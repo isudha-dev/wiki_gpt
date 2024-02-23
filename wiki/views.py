@@ -66,20 +66,23 @@ def get_text_completions(prompt, text):
 
 def get_summary_paraphase(page_title, section_title, operation):
     wiki_page = get_wiki_page(page_title)
-    section_text = wiki_page.section_by_title(section_title).text
+    sections = get_sections(wiki_page)
+
+    section_text = ""
+    for section in sections:
+        if section["title"] == section_title:
+            section_text = section["text"]
+            break
+
     section_summary = get_wiki_page_section_summary(wiki_page, section_title, section_text)
 
-    sections = []
-    for section in wiki_page.sections:
-        if section.title == section_title:
+    for section in sections:
+        if section["title"] == section_title:
             if operation == "summarise":
-                sections.append({"title": section.title, "text": section.text, "summary": section_summary})
+                section["summary"] = section_summary
             else:
-                paraphrased_summary = get_text_completions(paraphrase_prompt, section_summary)
-                sections.append({"title": section.title, "text": section.text, "summary": section_summary,
-                                 "paraphrase": paraphrased_summary})
-        else:
-            sections.append({"title": section.title, "text": section.text})
+                section["summary"] = section_summary
+                section["paraphrase"] = get_text_completions(paraphrase_prompt, section_summary)
 
     response = {
         SUCCESS: True,
@@ -96,6 +99,24 @@ def get_summary_paraphase(page_title, section_title, operation):
 
 def index(request):
     return render(request, "wiki/index.html")
+
+
+def get_sections(wiki_page):
+    sections = []
+
+    for section in wiki_page.sections:
+        section_dict = {"title": section.title, "text": section.text}
+
+        if not section.text:
+            section_text = ""
+            for subsection in section.sections:
+                section_text = "{0}\n\n{1}\n\n{2}".format(section_text, subsection.title, subsection.text)
+
+            section_dict["text"] = section_text
+
+        sections.append(section_dict)
+
+    return sections
 
 
 @extend_schema(
@@ -122,16 +143,12 @@ def get_wiki_sections(request):
         }
         return render(request, "wiki/index.html", response)
 
-    sections = []
-    for section in wiki_page.sections:
-        sections.append({"title": section.title, "text": section.text})
-
     response = {
         SUCCESS: True,
         DATA: {
             "page_title": wiki_page.title,
             "full_url": wiki_page.fullurl,
-            "sections": sections,
+            "sections": get_sections(wiki_page),
         }
     }
     return render(request, "wiki/index.html", response)
