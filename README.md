@@ -1,9 +1,12 @@
 # Introduction
 This project involve using the Wikipedia API to access content from a specific Wikipedia page and then applying OpenAI's GPT-3.5 Turbo for summarization and paraphrasing.
 
+Homepage: http://43.205.140.181/wiki/page/
 
 APIs:
 -----------
+Documentation: http://43.205.140.181/wiki/api/schema/swagger-ui/
+
 1. For getting wiki page sections.
 ```http
 GET /wiki/page/?page_title=Python(ProgrammingLanguage)
@@ -33,7 +36,7 @@ GET /wiki/page/?page_title=Python(ProgrammingLanguage)&section_title=History
 
 Requirements
 ------------
-- Python = 3.9 
+- Python = 3.11 
 - wikipedia-api = 0.6.0 
 - djangorestframework = 3.14.0 
 - Django = 4.2.10 
@@ -42,13 +45,22 @@ Requirements
   
 Installation
 ------------
-Install using 
+Add .env file and put the following:
+- OPENAI_API_KEY is used to call OPENAI API.
+- DJANGO_SECRET_KEY is a secret used by Django.
 
-    $ pip install -r requirements.txt
+```
+OPENAI_API_KEY="XXXXXXXXXXXXXXXXX"
+DJANGO_SECRET_KEY="django-insecure-XXXXXXXXXX"
+```
 
-or
+Build docker image using 
 
-    $ python3 -m pip install -r requirements.txt
+    $ docker compose -f docker-compose-prod.yml build
+
+Run docker container using
+
+    $  docker compose -f docker-compose-prod.yml up -d
 
 Possible future enhancements
 ----------------------------
